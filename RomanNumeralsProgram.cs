@@ -1,4 +1,4 @@
-// NOTE: Uses .NET 6 and may not compile as it may use .NET 6 specific features
+// NOTE: Uses .NET 6 and may not compile on earlier versions as it may use .NET 6 specific features
 
 // roman numerals:
 // I = 1
