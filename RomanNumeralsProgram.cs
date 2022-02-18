@@ -1,5 +1,3 @@
-// NOTE: Uses .NET 6 and may not compile on earlier versions as it may use .NET 6 specific features
-
 // roman numerals:
 // I = 1
 // V = 5
@@ -37,7 +35,13 @@ class Program
         { "L", 50 },
         { "C", 100 },
         { "D", 500 },
-        { "M", 1000 }
+        { "M", 1000 },
+        { "V̅", 5000 },
+        { "X̅", 10000 },
+        { "L̅", 50000 },
+        { "C̅", 100000 },
+        { "D̅", 500000 },
+        { "M̅", 1000000 }
     };
 
     static (long, string) GetBaseUnit(long digit, long zeroes)
@@ -55,7 +59,13 @@ class Program
             case < 100: return (num / 50, "L");
             case < 500: return (num / 100, "C");
             case < 1000: return (num / 500, "D");
-            default: return (num / 1000, "M");
+            case < 5000: return (num / 1000, "M");
+            case < 10000: return (num / 5000, "V̅");
+            case < 50000: return (num / 10000, "X̅");
+            case < 100000: return (num / 50000, "L̅");
+            case < 500000: return (num / 100000, "C̅");
+            case < 1000000: return (num / 500000, "D̅");
+            default: return (num / 1000000, "M̅");
         }
     }
 
@@ -69,6 +79,12 @@ class Program
             case "L": return "C";
             case "C": return "D";
             case "D": return "M";
+            case "M": return "V̅";
+            case "V̅": return "X̅";
+            case "X̅": return "L̅";
+            case "L̅": return "C̅";
+            case "C̅": return "D̅";
+            case "D̅": return "M̅";
             default: return "NULL";
         }
     }
@@ -227,12 +243,13 @@ class Program
             var digit = digits[i];
             var zeroes = numDigits - i - 1;
 
-            // we don't need to represent zeroes
-            if (digit == 0)
-            {
-                pendingAnd = true;
-            }
-            else
+            long idZeroes = zeroes;
+            while (idZeroes > 3)
+                idZeroes -= 3;
+
+            bool hundred = idZeroes == 2;
+
+            if (digit != 0)
             {
                 pendingTriad = true;
 
@@ -243,11 +260,6 @@ class Program
                 }
 
                 // identify if the number needs to be referred to by its 'tens' form, e.g. twenty, ninety
-
-                long idZeroes = zeroes;
-                while (idZeroes > 3)
-                    idZeroes -= 3;
-
                 bool tensForm = idZeroes == 1;
 
                 string digitAppend = string.Empty;
@@ -292,12 +304,12 @@ class Program
                 sb.Append(digitAppend);
                 sb.Append(' ');
 
-                if (idZeroes == 2)
-                {
+                if (hundred)
                     sb.Append("hundred ");
-                    pendingAnd = true;
-                }
             }
+
+            if (hundred)
+                pendingAnd = true;
 
             if (pendingTriad && zeroes % 3 == 0 || forceTriad)
             {
@@ -339,7 +351,7 @@ class Program
                 StringBuilder sb = new StringBuilder($"{input}: ");
 
                 // if we can't roman numeral-ise it, just english it
-                if (number is > 0 and < 4000)
+                if (number is >= 1 and <= 3999999)
                 {
                     string convertedRoman = ConvertToRomanNumerals(number);
                     sb.Append(convertedRoman + ", ");
@@ -368,4 +380,3 @@ class Program
         }*/
     }
 }
-
